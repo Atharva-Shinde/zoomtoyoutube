@@ -1,6 +1,6 @@
 ---
 name: General Issue
-description: Describe the issue as explicit as possible.
+about: Describe the issue as explicit as possible.
 title: "[Please change the title]"
 labels: ''
 assignees: ''
