@@ -1,4 +1,4 @@
-package storerecording
+package tobucket
 
 import (
 	"fmt"
