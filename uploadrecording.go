@@ -24,12 +24,11 @@ var (
 	file        = flag.String("File", "", "enter filename")
 	title       = flag.String("Title", "", "enter title")
 	description = flag.String("Description", "Dummy Description", "enter description")
-	privacy     = flag.String("Privacy", "unlisted", "public/private/ unlisted(default)")
 	// comments    = flag.Bool("Comments", false, "default false(off)")
 
 )
 
-const missingClientSecretsMessage = `Please configure OAuth 2.0`
+// const missingClientSecretsMessage = `Please configure OAuth 2.0`
 
 // getClient uses a Context and Config to retrieve a Token
 // then generate a Client. It returns the generated Client.
@@ -112,36 +111,31 @@ func handleError(err error, message string) {
 	}
 }
 
-// func uploadrecording(service *youtube.Service) {
-// 	call := service.Videos.Insert([]string{"snippet,status"}, &youtube.Video{
-// 		Snippet: &youtube.VideoSnippet{
-// 			Title:       *title,
-// 			Description: *description,
-// 		},
-// 		Status: &youtube.VideoStatus{
-// 			PrivacyStatus: "private",
-// 		},
-// 	})
-// 	response, err := call.Do()
-// 	handleError(err, "")
-// 	fmt.Println(fmt.Sprintf("Video id '%s' was successfully uploaded.",
-// 		response.Id))
-// }
+func uploadrecording(service *youtube.Service, file string, title string, description string) {
 
-func uploadrecording(service *youtube.Service, file string) {
+	if file == "" {
+		log.Fatalf("Please specify a file to upload.")
+	}
 
 	resource := &youtube.Video{
 		Snippet: &youtube.VideoSnippet{
 
-			Title:       *title,
-			Description: *description,
+			Title:       title,
+			Description: description,
 		},
 		Status: &youtube.VideoStatus{
 			PrivacyStatus: "unlisted",
 		},
 	}
 
-	upload := service.Videos.Insert([]string{"snippet, status"}, resource)
+	uploadmetadata := service.Videos.Insert([]string{"snippet, status"}, resource)
+
+	uploadvideo, err := os.Open(file)
+	handleError(err, "Error opening file.")
+
+	response, err := uploadmetadata.Media(uploadvideo).Do()
+	handleError(err, "Error uploading video.")
+	fmt.Printf("Video id '%s' was successfully uploaded.\n", response.Id)
 
 }
 
@@ -166,6 +160,5 @@ func main() {
 
 	handleError(err, "Error creating YouTube client")
 
-	// channelsListByUsername(service, "snippet,contentDetails,statistics", "GoogleDevelopers")
-	uploadrecording(service, *file)
+	uploadrecording(service, *file, *title, *description)
 }
