@@ -21,11 +21,10 @@ import (
 )
 
 var (
-	file        = flag.String("File", "", "enter filename")
-	title       = flag.String("Title", "", "enter title")
-	description = flag.String("Description", "Dummy Description", "enter description")
+	file        = flag.String("file", "", "enter the video filename")
+	title       = flag.String("title", "", "enter title")
+	description = flag.String("description", "Dummy Description", "enter description")
 	// comments    = flag.Bool("Comments", false, "default false(off)")
-
 )
 
 // const missingClientSecretsMessage = `Please configure OAuth 2.0`
@@ -50,7 +49,7 @@ func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
-		"authorization code: \n%v\n", authURL)
+		"authorization code below: \n%v\n", authURL)
 
 	var code string
 	if _, err := fmt.Scan(&code); err != nil {
@@ -119,7 +118,6 @@ func uploadrecording(service *youtube.Service, file string, title string, descri
 
 	resource := &youtube.Video{
 		Snippet: &youtube.VideoSnippet{
-
 			Title:       title,
 			Description: description,
 		},
@@ -135,7 +133,7 @@ func uploadrecording(service *youtube.Service, file string, title string, descri
 
 	response, err := uploadmetadata.Media(uploadvideo).Do()
 	handleError(err, "Error uploading video.")
-	fmt.Printf("Video id '%s' was successfully uploaded.\n", response.Id)
+	fmt.Printf("The video with id '%s' is successfully initiated for upload.\n", response.Id)
 
 }
 
@@ -156,9 +154,10 @@ func main() {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
 	client := getClient(ctx, config)
-	service, err := youtube.New(client)
-
 	handleError(err, "Error creating YouTube client")
+
+	service, err := youtube.New(client)
+	// service, err := youtube.NewService(ctx)
 
 	uploadrecording(service, *file, *title, *description)
 }
