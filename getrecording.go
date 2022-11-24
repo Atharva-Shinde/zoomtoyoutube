@@ -2,12 +2,16 @@
 package main
 
 type (
+	recordingtype struct {
+		type1 string `json:shared_screen_with_speaker_view(CC)`
+	}
 	RecordingFile struct {
-		DownloadURL string `json:download_url`
-		ID          string `json:id`         // id of recording file
-		MeetingID   string `json:meeting_id` // meeting number/id
-		PlayURL     string `json:play_url`
-		Status      string `json:status`
+		DownloadURL   string          `json:download_url`
+		ID            string          `json:id`         // id of recording file
+		MeetingID     string          `json:meeting_id` // meeting number/id
+		PlayURL       string          `json:play_url`
+		Status        string          `json:status`
+		RecordingType []recordingtype `json:recording_type`
 	}
 
 	Meeting struct {
